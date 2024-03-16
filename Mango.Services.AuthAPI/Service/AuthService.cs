@@ -28,7 +28,8 @@ namespace Mango.Services.AuthAPI.Service
             var user = db.ApplicationUsers.FirstOrDefault(u=>u.UserName.ToLower() == requestDto.UserName.ToLower());
             bool isValid = await userManager.CheckPasswordAsync(user, requestDto.Password);
             if (user == null || isValid == false) return new LoginResponseDto() { User = null, Token = "" };
-            var token = jwtTokenGenerator.GenerateToken(user);
+            var roles = await userManager.GetRolesAsync(user);
+            var token = jwtTokenGenerator.GenerateToken(user, roles);
             UserDTO userDto = new()
             {
                 Email = user.Email,
