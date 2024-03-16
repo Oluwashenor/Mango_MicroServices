@@ -43,7 +43,7 @@ namespace Mango.Services.AuthAPI.Controllers
         public async Task<IActionResult> AssignRole([FromBody] RegistrationRequestDTO model)
         {
             var assignRole = await authService.AssignRole(model.Email, model.Role.ToUpper());
-            if(assignRole)
+            if(!assignRole)
             {
                 response.IsSuccess = false;
                 response.Message = "Error Encountered";

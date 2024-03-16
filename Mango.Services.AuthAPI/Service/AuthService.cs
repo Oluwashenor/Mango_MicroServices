@@ -11,9 +11,9 @@ namespace Mango.Services.AuthAPI.Service
         public async Task<bool> AssignRole(string email, string roleName)
         {
             var user = db.ApplicationUsers.FirstOrDefault(u=>u.Email.ToLower() == email.ToLower());
-            if(user == null)
+            if(user != null)
             {
-                if(roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult()) {
+                if(!roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult()) {
                     //Create role if it does not exist
                     roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
                 }
