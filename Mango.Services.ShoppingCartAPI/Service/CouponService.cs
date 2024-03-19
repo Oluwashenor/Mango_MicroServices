@@ -9,10 +9,10 @@ namespace Mango.Services.ShoppingCartAPI.Service
         public async Task<CouponDto> GetCoupon(string couponCode)
         {
             var client = httpClientFactory.CreateClient("Coupon");
-            var response = await client.GetAsync($"/api/coupon");
+            var response = await client.GetAsync($"/api/coupon/GetByCode/{couponCode}");
             var apiContent = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
-            if (resp.IsSuccess)
+            if (resp != null && resp.IsSuccess)
             {
                 return JsonConvert.DeserializeObject<CouponDto>(Convert.ToString(resp.Result));
             }
