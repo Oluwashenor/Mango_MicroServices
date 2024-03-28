@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mango.MessageBus;
 using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
@@ -11,7 +12,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 {
     [Route("api/cart")]
     [ApiController]
-    public class CartAPIController(IMapper mapper, AppDbContext db, IProductService productService, ICouponService couponService) : ControllerBase
+    public class CartAPIController(IMapper mapper, AppDbContext db, IProductService productService, ICouponService couponService, IMessageBus messageBus, IConfiguration configuration) : ControllerBase
     {
 
         private readonly ResponseDto response = new ResponseDto();
@@ -77,23 +78,21 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             return response;
         }
 
-        //[HttpPost("EmailCartRequest")]
-        //public async Task<object> EmailCartRequest([FromBody] CartDto cartDto)
-        //{
-        //    try
-        //    {
-        //        await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
-        //        response.Result = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        response.IsSuccess = false;
-        //        response.Message = ex.ToString();
-        //    }
-        //    return response;
-        //}
-
-
+        [HttpPost("EmailCartRequest")]
+        public async Task<object> EmailCartRequest([FromBody] CartDto cartDto)
+        {
+            try
+            {
+                await messageBus.PublishMessage(cartDto, configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
+                response.Result = true;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.ToString();
+            }
+            return response;
+        }
 
 
         [HttpPost("CartUpsert")]
